@@ -62,7 +62,10 @@ jobs:
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
         id: deploy-to-webapp
+        env:
+          System.Debug: true
         with:
           app-name: 'ExChem'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_9C9D63EE814747F0B4B498C40DD2529B }}
+
