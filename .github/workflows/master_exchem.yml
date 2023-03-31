@@ -63,7 +63,7 @@ jobs:
         uses: azure/webapps-deploy@v2
         id: deploy-to-webapp
         env:
-          System.Debug: true
+          SYSTEM_DEBUG: true
         with:
           app-name: 'ExChem'
           slot-name: 'Production'
