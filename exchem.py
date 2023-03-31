@@ -8,7 +8,7 @@ from dash import html
 from dash_bio.utils import xyz_reader
 from dash.dependencies import Input, Output, State
 from dash import dash_table
-from dash.dash_table.Format import Format, Scheme
+from dash.dash_table.Format import Format
 import dash_bootstrap_components as dbc
 
 
@@ -670,5 +670,5 @@ def toggle_navbar_collapse(n, is_open):
     return is_open
 
 ### run server
-#if __name__ == '__main__':
-#   app.run_server(debug=True, use_reloader=True)  # Turn off reloader if inside Jupyter
+if __name__ == '__main__':
+   app.run_server(debug=True, use_reloader=True)  # Turn off reloader if inside Jupyter
