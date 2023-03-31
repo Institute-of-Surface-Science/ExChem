@@ -1,6 +1,6 @@
 import plotly.graph_objects as go
 import numpy as np
-import pandas as pd 
+import pandas as pd
 import dash
 from dash import dcc
 import dash_bio as dashbio
@@ -13,15 +13,17 @@ import dash_bootstrap_components as dbc
 
 
 def simbapre(kernel, df, index, no):
-    #idx = index + 7211
+    # idx = index + 7211
     idx = index + 7094
-    kernel_mod = kernel[:,:7093]
+    kernel_mod = kernel[:, :7093]
     max_idx = np.argpartition(kernel_mod[7094 + index], -no)[-no:]
     return max_idx
 
-def find_idx(compound,df):
+
+def find_idx(compound, df):
     idx = df[df['compound'].str.match(compound)].index.values.astype(int)[0]
     return idx
+
 
 def data_bars(df, column):
     n_bins = 100
@@ -38,19 +40,19 @@ def data_bars(df, column):
         max_bound = ranges[i]
         min_bound_percentage = bounds[i - 1] * 100
         max_bound_percentage = bounds[i] * 100
-        
+
         style = {
             'if': {
                 'filter_query': (
-                    '{{{column}}} >= {min_bound}' +
-                    (' && {{{column}}} < {max_bound}' if (i < len(bounds) - 1) else '')
+                        '{{{column}}} >= {min_bound}' +
+                        (' && {{{column}}} < {max_bound}' if (i < len(bounds) - 1) else '')
                 ).format(column=column, min_bound=min_bound, max_bound=max_bound),
                 'column_id': column
             },
             'paddingBottom': 2,
             'paddingTop': 2
-            }
-        if max_bound >= 40:    
+        }
+        if max_bound >= 40:
             background = (
                 """
                     linear-gradient(90deg,
@@ -65,7 +67,7 @@ def data_bars(df, column):
                     color_above='#3D9970'
                 )
             )
-        elif ((max_bound < 40) and (max_bound >= 0)) :    
+        elif ((max_bound < 40) and (max_bound >= 0)):
             background = (
                 """
                     linear-gradient(90deg,
@@ -97,10 +99,8 @@ def data_bars(df, column):
             )
         style['background'] = background
         styles.append(style)
-        
 
     return styles
-
 
 
 # Declarations
@@ -112,8 +112,7 @@ test = data[data['label'].str.match("test")]
 new_test = data[data['label'].str.match("new_test")]
 
 untested = data[data['label'].str.match("untested")]
-tested = data[data['label'].str.match('|'.join(["train","test","new_test"]))]
-
+tested = data[data['label'].str.match('|'.join(["train", "test", "new_test"]))]
 
 ## Similarity-based discovery of inhibitors
 struc = pd.read_csv('structures_commercial.csv')
@@ -121,13 +120,11 @@ struc['IE_krr'] = struc['IE_krr'].round(decimals=0)
 
 sim = np.load('K_c3_g1_commercial.npy')
 
-
-
 ## Properties
 ie = tested['H2evo.220ppm']
 mol = xyz_reader.read_xyz(datapath_or_datastring='structures/tris.xyz', is_datafile=True)
 
-sel_idx = find_idx('tris',data)
+sel_idx = find_idx('tris', data)
 max_idx = simbapre(sim, data, sel_idx, 5)
 struc['sim_val'] = 100 * sim[7094 + sel_idx].round(decimals=3)
 
@@ -137,18 +134,18 @@ mol_sim = xyz_reader.read_xyz(datapath_or_datastring='structures/' + str(sim_str
 ### Scatter plots
 fig = go.FigureWidget()
 fig.add_trace(go.Scattergl(
-    x = untested['CV1'],
-    y = untested['CV2'],
+    x=untested['CV1'],
+    y=untested['CV2'],
     customdata=untested['compound'],
-    hovertemplate = '<b>%{customdata}</b>',
+    hovertemplate='<b>%{customdata}</b>',
     mode='markers',
-    marker_symbol = 'cross',
+    marker_symbol='cross',
     marker=dict(
         color='lightgray',
         line_width=0,
         size=15
     ),
-    name= 'Untested',
+    name='Untested',
     unselected=dict(
         marker=dict(opacity=0.5)
     ),
@@ -160,10 +157,10 @@ fig.add_trace(go.Scattergl(
 ))
 
 fig.add_trace(go.Scattergl(
-    x = tested['CV1'],
-    y = tested['CV2'],
+    x=tested['CV1'],
+    y=tested['CV2'],
     customdata=np.vstack((tested['compound'].values, tested['H2evo.220ppm'].values)).transpose(),
-    hovertemplate = '<b>%{customdata[0]}</b><br>%{customdata[1]:.0f} %',
+    hovertemplate='<b>%{customdata[0]}</b><br>%{customdata[1]:.0f} %',
     mode='markers',
     marker=dict(
         color=ie,
@@ -181,7 +178,7 @@ fig.add_trace(go.Scattergl(
             y=0.97,
             thickness=20)
     ),
-    name= 'Tested',
+    name='Tested',
     unselected=dict(
         marker=dict(opacity=0.5)
     ),
@@ -192,27 +189,24 @@ fig.add_trace(go.Scattergl(
     )
 ))
 
-fig.update_xaxes(range=[min(tested['CV1'])-0.05, max(tested['CV1'])+0.05])
-fig.update_yaxes(range=[min(tested['CV2'])-0.05, max(tested['CV2'])+0.05])
-
-
-  
+fig.update_xaxes(range=[min(tested['CV1']) - 0.05, max(tested['CV1']) + 0.05])
+fig.update_yaxes(range=[min(tested['CV2']) - 0.05, max(tested['CV2']) + 0.05])
 
 ### Figure Layout
 fig.update_layout(
     autosize=False,
     width=900,
     height=700,
-    xaxis = {
-        'showgrid':False,
-        'zeroline':False,
+    xaxis={
+        'showgrid': False,
+        'zeroline': False,
         'visible': False
-        },
-    yaxis = {
-        'showgrid':False,
-        'zeroline':False,
+    },
+    yaxis={
+        'showgrid': False,
+        'zeroline': False,
         'visible': False
-        },
+    },
     paper_bgcolor='rgba(0,0,0,0)',
     plot_bgcolor='rgba(0,0,0,0)',
     margin=dict(
@@ -223,20 +217,20 @@ fig.update_layout(
         pad=4
     ),
     legend=dict(
-    yanchor="top",
-    y=0.9,
-    xanchor="left",
-    x=0.1
+        yanchor="top",
+        y=0.9,
+        xanchor="left",
+        x=0.1
     ),
     hoverlabel=dict(
-        bgcolor="white", 
-        font_size=14, 
+        bgcolor="white",
+        font_size=14,
         font_family="Arial"
     ),
     clickmode='event+select'
 )
 
-speck_view_main={
+speck_view_main = {
     'resolution': 269,
     'ao': 0.1,
     'outline': 1,
@@ -245,7 +239,7 @@ speck_view_main={
     'bonds': True
 }
 
-speck_view_sim={
+speck_view_sim = {
     'resolution': 269,
     'ao': 0.1,
     'outline': 1,
@@ -254,9 +248,9 @@ speck_view_sim={
     'bonds': True
 }
 
-speck_legend={
+speck_legend = {
     'resolution': 60,
-    #'zoom' : 0.5,
+    # 'zoom' : 0.5,
     'ao': 0,
     'outline': 1,
     'atomScale': .9,
@@ -316,8 +310,8 @@ modal = html.Div(
                     [[2] Data Science Based Mg Corrosion Engineering, *Frontiers in Materials* **6** 53 (2019)](https://doi.org/10.3389/fmats.2019.00053)   
                     [[3] In silico Screening of Modulators of Magnesium Dissolution, *Corrosion Science* 108245 (2020)](https://doi.org/10.1016/j.corsci.2019.108245)  
                     [[4] Exploring Structure-Property Relationships in Magnesium Dissolution Modulators, *npj Materials Degradation* **5** 2 (2021)](https://www.nature.com/articles/s41529-020-00148-z)
-                    ''',dangerously_allow_html=True)
-                ),
+                    ''', dangerously_allow_html=True)
+                              ),
                 dbc.ModalFooter(
                     dbc.Button(
                         "Close", id="info-close", className="ml-auto"
@@ -331,106 +325,104 @@ modal = html.Div(
     ]
 )
 
-extra = dbc.Container(fluid=True,children=[dbc.Row(
+extra = dbc.Container(fluid=True, children=[dbc.Row(
     [
         dbc.Col(
             dbc.NavItem(
                 modal,
-                ),style={"list-style-type" : "none","color": "white", "offset" : "20%"}
+            ), style={"list-style-type": "none", "color": "white", "offset": "20%"}
         ),
         dbc.Col(
             dbc.DropdownMenu(
-            children=[
-                #dbc.DropdownMenuItem("Examples", header=True),
-                dbc.DropdownMenuItem("Magnesium Dissolution Modulators", href="#"),
-            ],
-            nav=True,
-            in_navbar=True,
-            label="Datasets",
-            toggle_style={"color": "white"},
-            style={"list-style-type" : "none"}
+                children=[
+                    # dbc.DropdownMenuItem("Examples", header=True),
+                    dbc.DropdownMenuItem("Magnesium Dissolution Modulators", href="#"),
+                ],
+                nav=True,
+                in_navbar=True,
+                label="Datasets",
+                toggle_style={"color": "white"},
+                style={"list-style-type": "none"}
             ),
-        )        
+        )
     ],
     align="center",
     className="g-0"
-)],className="g-0",style={'color': 'white', 'width' : '100%' })
-
-
-
+)], className="g-0", style={'color': 'white', 'width': '100%'})
 
 navbar = dbc.Navbar(
-    dbc.Container(fluid=True,children=
-        [
-            html.A(
-                # Use row and col to control vertical alignment of logo / brand
-                dbc.Row(
-                    [
-                        dbc.Col(html.Img(src="https://raw.githubusercontent.com/koerper/ExChem/master/id_logo.png", height="30px"), width="auto"),
-                        dbc.Col(dbc.NavbarBrand("ExChem: Explore the Chemical Space", className="ml-2"), width="auto"),
-                    ],
-                    align="center",
-                    className="g-0",
-                    style={'width' : '100%'}
-                ),
-                #href="https://plot.ly",
+    dbc.Container(fluid=True, children=
+    [
+        html.A(
+            # Use row and col to control vertical alignment of logo / brand
+            dbc.Row(
+                [
+                    dbc.Col(html.Img(src="https://raw.githubusercontent.com/koerper/ExChem/master/id_logo.png",
+                                     height="30px"), width="auto"),
+                    dbc.Col(dbc.NavbarBrand("ExChem: Explore the Chemical Space", className="ml-2"), width="auto"),
+                ],
+                align="center",
+                className="g-0",
+                style={'width': '100%'}
             ),
-            dbc.NavbarToggler(id="navbar-toggler"),
-            dbc.Collapse(extra, id="navbar-collapse", navbar=True),
-        ]),
-        color="dark",
-        dark=True,
-        #sticky="top",
-        fixed="top",        
-        style={'color': 'white', 'width' : '100%' }
-        )
+            # href="https://plot.ly",
+        ),
+        dbc.NavbarToggler(id="navbar-toggler"),
+        dbc.Collapse(extra, id="navbar-collapse", navbar=True),
+    ]),
+    color="dark",
+    dark=True,
+    # sticky="top",
+    fixed="top",
+    style={'color': 'white', 'width': '100%'}
+)
 
 footer = dbc.Navbar(
-    dbc.Container(fluid=True,children=[
+    dbc.Container(fluid=True, children=[
         dbc.Row([
             dbc.Col(
                 [
-                        html.A('Created by '),
-                        html.A('Tim Würger'#,href='https://koerper.github.io/',style={"color": "white", "text-decoration": "underline"}
-                               ),
-                    ], width="auto", lg="auto", xl="auto" 
+                    html.A('Created by '),
+                    html.A('Tim Würger'
+                           # ,href='https://koerper.github.io/',style={"color": "white", "text-decoration": "underline"}
+                           ),
+                ], width="auto", lg="auto", xl="auto"
             ),
             dbc.Col([
                 html.A("ExChem: Explore The Chemical Space"),
-                #html.A(html.I(className="fab fa-github fa-lg"),href="https://github.com/koerper/ExChem",style={"color": "white", "padding-left" : "3%"}) 
-                ], width="auto", lg="auto", xl="auto" 
-            ),           
+                # html.A(html.I(className="fab fa-github fa-lg"),href="https://github.com/koerper/ExChem",style={"color": "white", "padding-left" : "3%"})
+            ], width="auto", lg="auto", xl="auto"
+            ),
             dbc.Col(
-                html.A("© 2020 Tim Würger"), width="auto", lg="auto", xl="auto" 
-            )        
-        ],  align="center",
+                html.A("© 2020 Tim Würger"), width="auto", lg="auto", xl="auto"
+            )
+        ], align="center",
             className="g-0",
             justify="between",
-            style={'width' : '100%'}
+            style={'width': '100%'}
         )
     ]),
-        color="dark",
-        dark=True,
-        #sticky="bottom",
-        fixed="bottom",
-        style={'color': 'white','height' : '5%', 'width' : '100%' }
+    color="dark",
+    dark=True,
+    # sticky="bottom",
+    fixed="bottom",
+    style={'color': 'white', 'height': '5%', 'width': '100%'}
 )
 
-
 ### App properties
-app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP,'https://use.fontawesome.com/releases/v5.8.1/css/all.css'])
+app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP, 'https://use.fontawesome.com/releases/v5.8.1/css/all.css'])
 
 server = app.server
 
 app.title = 'ExChem'
 
 app.layout = html.Div([
-    
+
     html.Div([
         navbar
     ]),
     html.Div([
-        
+
         html.Div([
             dcc.Markdown('''
                          ##### **Dataset** | Magnesium Dissolution Modulators
@@ -442,22 +434,25 @@ app.layout = html.Div([
                     'displayModeBar': False
                 }
             ),
-            html.A(href="https://www.hereon.de",children=[
-                    html.Img(src="https://raw.githubusercontent.com/koerper/ExChem/master/assets/hereon_logo.png", height="60px")
-                ],
-                style={'display': 'inline-block', 'vertical-align' : 'center','padding-top' : '2%','padding-right' : '1%'}
-                ),
-            html.A(href="https://www.tuhh.de",children=[
-                    html.Img(src="https://raw.githubusercontent.com/koerper/ExChem/master/assets/tuhh_logo.png", height="35px")
-                ],
-                style={'display': 'inline-block', 'vertical-align' : 'center','padding-top' : '2%'}
-                ),
-            
+            html.A(href="https://www.hereon.de", children=[
+                html.Img(src="https://raw.githubusercontent.com/koerper/ExChem/master/assets/hereon_logo.png",
+                         height="60px")
+            ],
+                   style={'display': 'inline-block', 'vertical-align': 'center', 'padding-top': '2%',
+                          'padding-right': '1%'}
+                   ),
+            html.A(href="https://www.tuhh.de", children=[
+                html.Img(src="https://raw.githubusercontent.com/koerper/ExChem/master/assets/tuhh_logo.png",
+                         height="35px")
+            ],
+                   style={'display': 'inline-block', 'vertical-align': 'center', 'padding-top': '2%'}
+                   ),
+
         ],
-        style={'width': '56%', 'display': 'inline-block', 'padding-top' : '1%'}),
-        #style={'width': '1000px', 'display': 'inline-block', 'padding-top' : '1%'}),
+            style={'width': '56%', 'display': 'inline-block', 'padding-top': '1%'}),
+        # style={'width': '1000px', 'display': 'inline-block', 'padding-top' : '1%'}),
         html.Div([
-            
+
             html.Div([
                 html.H5('Selected structure'),
                 html.Div([
@@ -465,121 +460,121 @@ app.layout = html.Div([
                         id='my-speck',
                         data=mol,
                         view=speck_view_main,
-                        style={'width' : '269px',
-                               'height' : '269px'}
+                        style={'width': '269px',
+                               'height': '269px'}
                     )
-                ], 
-                style={'border': '3px solid','width' : '275px','height' : '275px'}),
+                ],
+                    style={'border': '3px solid', 'width': '275px', 'height': '275px'}),
                 html.P(
                     id='inh_text',
-                    children = [],
-                    style={'width' : '275px','height' : '60px'}
+                    children=[],
+                    style={'width': '275px', 'height': '60px'}
                 )
-            ],style={'display': 'inline-block', 'vertical-align' : 'top', 'padding-top' : '3%'}),
-                html.Div([
-                    html.Img(src="https://raw.githubusercontent.com/koerper/ExChem/master/atoms-legend.png", height="275px")
-                ],style={'display': 'inline-block', 'vertical-align' : 'top', 'padding-top' : '8%', 'padding-left' : '54px'}),            
+            ], style={'display': 'inline-block', 'vertical-align': 'top', 'padding-top': '3%'}),
             html.Div([
-                html.H5('Proposed similar structure'),                
-                html.Div([ 
+                html.Img(src="https://raw.githubusercontent.com/koerper/ExChem/master/atoms-legend.png", height="275px")
+            ], style={'display': 'inline-block', 'vertical-align': 'top', 'padding-top': '8%', 'padding-left': '54px'}),
+            html.Div([
+                html.H5('Proposed similar structure'),
+                html.Div([
                     dashbio.Speck(
                         id='sim-speck',
                         data=mol,
                         view=speck_view_sim,
-                        style={'width' : '269px',
-                               'height' : '269px'}
+                        style={'width': '269px',
+                               'height': '269px'}
                     )
-                ], 
-                style={'border': '3px dashed','width' : '275px','height' : '275px'}),
+                ],
+                    style={'border': '3px dashed', 'width': '275px', 'height': '275px'}),
                 html.P(
                     id='sim_text',
-                    children = [],
-                    style={'width' : '275px','height' : '60px','overflow-wrap': 'break-word'}
+                    children=[],
+                    style={'width': '275px', 'height': '60px', 'overflow-wrap': 'break-word'}
                 )
-            ],style={'display': 'inline-block','vertical-align' : 'top', 'padding-left' : '54px', 'padding-top' : '3%'}),
+            ], style={'display': 'inline-block', 'vertical-align': 'top', 'padding-left': '54px', 'padding-top': '3%'}),
 
             html.Div([
                 html.Div([
-                dbc.Row([
-                    dbc.Col([
-                       "Top"
-                    ],width='auto'),
-                    dbc.Col([
-                        dcc.Dropdown(
-                            id='dropdown',
-                            options=[
-                                {'label': '5', 'value': '5'},
-                                {'label': '10', 'value': '10'},
-                                {'label': '20', 'value': '20'},
-                                {'label': '50', 'value': '50'}
-                            ],
-                            value='10',
-                            clearable=False
-                        )],width={"size": "100px", "offset": "10px"}
-                    ),
-                    dbc.Col([
-                        'similar structures'
-                    ],width={"size": "auto", "offset": "10px"}),
-                ],align='center',
-                className="g-0"
-                )
-                ],style={'padding-bottom' : '10px'}),
+                    dbc.Row([
+                        dbc.Col([
+                            "Top"
+                        ], width='auto'),
+                        dbc.Col([
+                            dcc.Dropdown(
+                                id='dropdown',
+                                options=[
+                                    {'label': '5', 'value': '5'},
+                                    {'label': '10', 'value': '10'},
+                                    {'label': '20', 'value': '20'},
+                                    {'label': '50', 'value': '50'}
+                                ],
+                                value='10',
+                                clearable=False
+                            )], width={"size": "100px", "offset": "10px"}
+                        ),
+                        dbc.Col([
+                            'similar structures'
+                        ], width={"size": "auto", "offset": "10px"}),
+                    ], align='center',
+                        className="g-0"
+                    )
+                ], style={'padding-bottom': '10px'}),
                 dash_table.DataTable(
                     id='table',
                     columns=[
                         {"name": 'CAS Number', "id": 'Filename'},
-                        {"name": 'Similarity / %', "id": 'sim_val', 'type':'numeric', 'format':Format(precision=3)},
+                        {"name": 'Similarity / %', "id": 'sim_val', 'type': 'numeric', 'format': Format(precision=3)},
                         {"name": 'Predicted IE / %', "id": 'IE_krr'}
-                        ],
-                    #selected_rows = max_idx,
+                    ],
+                    # selected_rows = max_idx,
                     data=struc.iloc[max_idx].to_dict("records"),
                     selected_rows=[0],
                     style_cell_conditional=[
                         {'if': {'column_id': 'Filename'},
-                        'width': '120px',
-                        'textAlign': 'left',
-                        'minWidth': '120px',
-                        'maxWidth': '120px',
-                        'overflow': 'hidden',
-                        'textOverflow': 'ellipsis',
+                         'width': '120px',
+                         'textAlign': 'left',
+                         'minWidth': '120px',
+                         'maxWidth': '120px',
+                         'overflow': 'hidden',
+                         'textOverflow': 'ellipsis',
                          'textAlign': 'center'
-                        },
+                         },
                         {'if': {'column_id': 'IE_krr'},
-                        'width': '180px',
-                        'minWidth': '180px',
-                        'maxWidth': '180px',
-                        'overflow': 'hidden',
-                        'textOverflow': 'ellipsis',
-                        'textAlign': 'center'},
+                         'width': '180px',
+                         'minWidth': '180px',
+                         'maxWidth': '180px',
+                         'overflow': 'hidden',
+                         'textOverflow': 'ellipsis',
+                         'textAlign': 'center'},
                         {'if': {'column_id': 'sim_val'},
-                        'width': '140px',
-                        'minWidth': '140px',
-                        'maxWidth': '140px',
-                        'overflow': 'hidden',
-                        'textOverflow': 'ellipsis',
-                        'textAlign': 'center'}
+                         'width': '140px',
+                         'minWidth': '140px',
+                         'maxWidth': '140px',
+                         'overflow': 'hidden',
+                         'textOverflow': 'ellipsis',
+                         'textAlign': 'center'}
                     ],
                     fixed_rows={'headers': True},
                     row_selectable='single',
                     sort_action='native',
                     style_table={
-                    'height': '350px', 
-                    'width': '700px',
-                    'overflowY': 'auto'
+                        'height': '350px',
+                        'width': '700px',
+                        'overflowY': 'auto'
                     },
                     css=[{'selector': '.row', 'rule': 'margin: 0'}],
                     style_data_conditional=(
                         data_bars(struc, 'IE_krr')
                     )
                 )
-            ],style={'vertical-align' : 'top'})
+            ], style={'vertical-align': 'top'})
         ],
-        #style={'width': '49%', 'display': 'inline-block', 'vertical-align' : 'top', 'padding-left' : '3%'})
-        style={'width': '700px', 'display': 'inline-block', 'vertical-align' : 'top'})
-    ],style={'font-family' : 'Arial', 'padding-top' : '3%', 'padding-left' : '1%', 'padding-bottom' : '3%'}),
-    
+            # style={'width': '49%', 'display': 'inline-block', 'vertical-align' : 'top', 'padding-left' : '3%'})
+            style={'width': '700px', 'display': 'inline-block', 'vertical-align': 'top'})
+    ], style={'font-family': 'Arial', 'padding-top': '3%', 'padding-left': '1%', 'padding-bottom': '3%'}),
+
     footer
-]#,style={'display':'flex', 'flex-direction': 'row'}
+]  # ,style={'display':'flex', 'flex-direction': 'row'}
 )
 
 
@@ -606,8 +601,6 @@ def update_molecule_viewer(clickData):
     return mol, mol_text
 
 
-
-
 @app.callback(
     [Output('table', 'data'), Output('sim-speck', 'data'), Output('sim_text', 'children')],
     [Input('basic-interactions', 'clickData'),
@@ -616,15 +609,15 @@ def update_molecule_viewer(clickData):
 )
 def update_table(clickData, selected_rows, no_rows):
     if clickData is None:
-        sel_idx = find_idx('tris',data)
+        sel_idx = find_idx('tris', data)
         max_idx = simbapre(sim, data, sel_idx, int(no_rows))
-        
+
         struc['sim_val'] = 100 * sim[7094 + sel_idx].round(decimals=3)
         table_rows = struc.iloc[max_idx].to_dict("records")
         try:
             sim_struc = struc['Filename'].iloc[max_idx[selected_rows[0]]]
         except:
-            selected_rows=[0]
+            selected_rows = [0]
             sim_struc = struc['Filename'].iloc[max_idx[selected_rows[0]]]
         mol_sim = xyz_reader.read_xyz(datapath_or_datastring='structures/' + str(sim_struc) + '.xyz', is_datafile=True)
         sim_text = [struc['Identifier'].iloc[max_idx[selected_rows[0]]]]
@@ -636,18 +629,19 @@ def update_table(clickData, selected_rows, no_rows):
     if curveNumber == 1:
         identifier = tested['compound'].iloc[point_id]
     sel_idx = find_idx(identifier, data)
-    
+
     struc['sim_val'] = 100 * sim[7094 + sel_idx].round(decimals=3)
     max_idx = simbapre(sim, data, sel_idx, int(no_rows))
     table_rows = struc.iloc[max_idx].to_dict("records")
     try:
         sim_struc = struc['Filename'].iloc[max_idx[selected_rows[0]]]
     except:
-        selected_rows=[0]
+        selected_rows = [0]
         sim_struc = struc['Filename'].iloc[max_idx[selected_rows[0]]]
     mol_sim = xyz_reader.read_xyz(datapath_or_datastring='structures/' + str(sim_struc) + '.xyz', is_datafile=True)
     sim_text = [struc['Identifier'].iloc[max_idx[selected_rows[0]]]]
     return table_rows, mol_sim, sim_text
+
 
 @app.callback(
     Output("modal-centered", "is_open"),
@@ -659,6 +653,7 @@ def toggle_modal(n1, n2, is_open):
         return not is_open
     return is_open
 
+
 @app.callback(
     Output("navbar-collapse", "is_open"),
     [Input("navbar-toggler", "n_clicks")],
@@ -669,6 +664,7 @@ def toggle_navbar_collapse(n, is_open):
         return not is_open
     return is_open
 
+
 ### run server
 if __name__ == '__main__':
-   app.run_server(debug=True, use_reloader=True)  # Turn off reloader if inside Jupyter
+    app.run_server(debug=True, use_reloader=True)  # Turn off reloader if inside Jupyter
