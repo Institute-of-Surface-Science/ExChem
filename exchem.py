@@ -400,8 +400,7 @@ footer = dbc.Navbar(
         dbc.Row([
             dbc.Col(
                 [
-                    html.A('Created by '),
-                    html.A('Tim Würger' ),
+                    html.A('Created by Tim Würger'),
                 ], width="auto", lg="auto", xl="auto"
             ),
             dbc.Col([
@@ -409,7 +408,7 @@ footer = dbc.Navbar(
             ], width="auto", lg="auto", xl="auto"
             ),
             dbc.Col(
-                html.A("© 2020 Tim Würger"), width="auto", lg="auto", xl="auto"
+                html.A("© 2023 Helmholtz-Center hereon GmbH"), width="auto", lg="auto", xl="auto"
             )
         ], align="center",
             className="g-0",
@@ -681,5 +680,5 @@ def toggle_navbar_collapse(n, is_open):
 
 
 ### run server
-if __name__ == '__main__':
-    app.run_server(debug=True, use_reloader=True)  # Turn off reloader if inside Jupyter
+#if __name__ == '__main__':
+#    app.run_server(debug=True, use_reloader=True)  # Turn off reloader if inside Jupyter
