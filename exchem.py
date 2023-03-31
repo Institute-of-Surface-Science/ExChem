@@ -132,7 +132,7 @@ tested = data[data['label'].str.match('|'.join(["train", "test", "new_test"]))]
 struc = pd.read_csv('structures_commercial.csv')
 struc['IE_krr'] = struc['IE_krr'].round(decimals=0)
 
-sim = np.load('K_c3_g1_commercial.npy')
+sim = np.load('K_c3_g1_commercial.npy', allow_pickle=True)
 
 ## Properties
 ie = tested['H2evo.220ppm']
