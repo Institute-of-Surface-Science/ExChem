@@ -375,7 +375,7 @@ navbar = dbc.Navbar(
             # Use row and col to control vertical alignment of logo / brand
             dbc.Row(
                 [
-                    dbc.Col(html.Img(src="https://raw.githubusercontent.com/koerper/ExChem/master/id_logo.png",
+                    dbc.Col(html.Img(src="assets/id_logo.png",
                                      height="30px"), width="auto"),
                     dbc.Col(dbc.NavbarBrand("ExChem: Explore the Chemical Space", className="ml-2"), width="auto"),
                 ],
@@ -401,9 +401,7 @@ footer = dbc.Navbar(
             dbc.Col(
                 [
                     html.A('Created by '),
-                    html.A('Tim Würger'
-                           # ,href='https://koerper.github.io/',style={"color": "white", "text-decoration": "underline"}
-                           ),
+                    html.A('Tim Würger' ),
                 ], width="auto", lg="auto", xl="auto"
             ),
             dbc.Col([
@@ -452,14 +450,14 @@ app.layout = html.Div([
                 }
             ),
             html.A(href="https://www.hereon.de", children=[
-                html.Img(src="https://raw.githubusercontent.com/koerper/ExChem/master/assets/hereon_logo.png",
+                html.Img(src=app.get_asset_url("hereon_logo.png"),
                          height="60px")
             ],
                    style={'display': 'inline-block', 'vertical-align': 'center', 'padding-top': '2%',
                           'padding-right': '1%'}
                    ),
             html.A(href="https://www.tuhh.de", children=[
-                html.Img(src="https://raw.githubusercontent.com/koerper/ExChem/master/assets/tuhh_logo.png",
+                html.Img(src=app.get_asset_url("tuhh_logo.png"),
                          height="35px")
             ],
                    style={'display': 'inline-block', 'vertical-align': 'center', 'padding-top': '2%'}
@@ -489,7 +487,7 @@ app.layout = html.Div([
                 )
             ], style={'display': 'inline-block', 'vertical-align': 'top', 'padding-top': '3%'}),
             html.Div([
-                html.Img(src="https://raw.githubusercontent.com/koerper/ExChem/master/atoms-legend.png", height="275px")
+                html.Img(src=app.get_asset_url("atoms-legend.png"), height="275px")
             ], style={'display': 'inline-block', 'vertical-align': 'top', 'padding-top': '8%', 'padding-left': '54px'}),
             html.Div([
                 html.H5('Proposed similar structure'),
