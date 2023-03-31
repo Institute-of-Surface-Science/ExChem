@@ -12,20 +12,34 @@ from dash.dash_table.Format import Format
 import dash_bootstrap_components as dbc
 
 
-def simbapre(kernel, df, index, no):
-    # idx = index + 7211
-    idx = index + 7094
+def simbapre(kernel, index, no):
+    # todo: add docstring
+    """
+
+    @param kernel:
+    @param index:
+    @param no:
+    @return:
+    """
+    # todo: remove hardcoded value
     kernel_mod = kernel[:, :7093]
+    # todo: remove hardcoded value
     max_idx = np.argpartition(kernel_mod[7094 + index], -no)[-no:]
     return max_idx
 
 
 def find_idx(compound, df):
+    """
+    Return the index of a compound
+    @param compound: String of the compound.
+    @param df: Datafield to search in.
+    @return: Integer index
+    """
     idx = df[df['compound'].str.match(compound)].index.values.astype(int)[0]
     return idx
 
 
-def data_bars(df, column):
+def data_bars(column):
     n_bins = 100
     bounds = [i * (1.0 / n_bins) for i in range(n_bins + 1)]
     col_max = 100
@@ -122,14 +136,14 @@ sim = np.load('K_c3_g1_commercial.npy')
 
 ## Properties
 ie = tested['H2evo.220ppm']
-mol = xyz_reader.read_xyz(datapath_or_datastring='structures/tris.xyz', is_datafile=True)
+mol = xyz_reader.read_xyz(datapath_or_datastring='structures/tris.xyz')
 
 sel_idx = find_idx('tris', data)
-max_idx = simbapre(sim, data, sel_idx, 5)
+max_idx = simbapre(sim, sel_idx, 5)
 struc['sim_val'] = 100 * sim[7094 + sel_idx].round(decimals=3)
 
 sim_struc = struc['Filename'].iloc[max_idx[0]]
-mol_sim = xyz_reader.read_xyz(datapath_or_datastring='structures/' + str(sim_struc) + '.xyz', is_datafile=True)
+mol_sim = xyz_reader.read_xyz(datapath_or_datastring='structures/' + str(sim_struc) + '.xyz')
 
 ### Scatter plots
 fig = go.FigureWidget()
@@ -566,7 +580,7 @@ app.layout = html.Div([
                     },
                     css=[{'selector': '.row', 'rule': 'margin: 0'}],
                     style_data_conditional=(
-                        data_bars(struc, 'IE_krr')
+                        data_bars('IE_krr')
                     )
                 )
             ], style={'vertical-align': 'top'})
@@ -587,7 +601,7 @@ app.layout = html.Div([
 def update_molecule_viewer(clickData):
     global identifier, mol_text
     if clickData is None:
-        mol = xyz_reader.read_xyz(datapath_or_datastring='structures/tris.xyz', is_datafile=True)
+        mol = xyz_reader.read_xyz(datapath_or_datastring='structures/tris.xyz')
         mol_text = ['tris, -72%']
         return mol, mol_text
     point_id = clickData['points'][0]['pointNumber']
@@ -599,7 +613,7 @@ def update_molecule_viewer(clickData):
         identifier = tested['compound'].iloc[point_id]
         ie_val = tested['H2evo.220ppm'].iloc[point_id]
         mol_text = [str(identifier) + ', ' + str(int(ie_val)) + '%']
-    mol = xyz_reader.read_xyz(datapath_or_datastring='structures/' + str(identifier) + '.xyz', is_datafile=True)
+    mol = xyz_reader.read_xyz(datapath_or_datastring='structures/' + str(identifier) + '.xyz')
     return mol, mol_text
 
 
@@ -613,7 +627,7 @@ def update_table(clickData, selected_rows, no_rows):
     global identifier
     if clickData is None:
         sel_idx = find_idx('tris', data)
-        max_idx = simbapre(sim, data, sel_idx, int(no_rows))
+        max_idx = simbapre(sim, sel_idx, int(no_rows))
 
         struc['sim_val'] = 100 * sim[7094 + sel_idx].round(decimals=3)
         table_rows = struc.iloc[max_idx].to_dict("records")
@@ -622,7 +636,7 @@ def update_table(clickData, selected_rows, no_rows):
         except:
             selected_rows = [0]
             sim_struc = struc['Filename'].iloc[max_idx[selected_rows[0]]]
-        mol_sim = xyz_reader.read_xyz(datapath_or_datastring='structures/' + str(sim_struc) + '.xyz', is_datafile=True)
+        mol_sim = xyz_reader.read_xyz(datapath_or_datastring='structures/' + str(sim_struc) + '.xyz')
         sim_text = [struc['Identifier'].iloc[max_idx[selected_rows[0]]]]
         return table_rows, mol_sim, sim_text
     point_id = clickData['points'][0]['pointNumber']
@@ -634,14 +648,14 @@ def update_table(clickData, selected_rows, no_rows):
     sel_idx = find_idx(identifier, data)
 
     struc['sim_val'] = 100 * sim[7094 + sel_idx].round(decimals=3)
-    max_idx = simbapre(sim, data, sel_idx, int(no_rows))
+    max_idx = simbapre(sim, sel_idx, int(no_rows))
     table_rows = struc.iloc[max_idx].to_dict("records")
     try:
         sim_struc = struc['Filename'].iloc[max_idx[selected_rows[0]]]
     except:
         selected_rows = [0]
         sim_struc = struc['Filename'].iloc[max_idx[selected_rows[0]]]
-    mol_sim = xyz_reader.read_xyz(datapath_or_datastring='structures/' + str(sim_struc) + '.xyz', is_datafile=True)
+    mol_sim = xyz_reader.read_xyz(datapath_or_datastring='structures/' + str(sim_struc) + '.xyz')
     sim_text = [struc['Identifier'].iloc[max_idx[selected_rows[0]]]]
     return table_rows, mol_sim, sim_text
 
@@ -669,5 +683,5 @@ def toggle_navbar_collapse(n, is_open):
 
 
 ### run server
-#if __name__ == '__main__':
-#    app.run_server(debug=True, use_reloader=True)  # Turn off reloader if inside Jupyter
+if __name__ == '__main__':
+    app.run_server(debug=True, use_reloader=True)  # Turn off reloader if inside Jupyter
