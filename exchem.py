@@ -10,6 +10,7 @@ from dash.dependencies import Input, Output, State
 from dash import dash_table
 from dash.dash_table.Format import Format
 import dash_bootstrap_components as dbc
+from flask import url_for
 
 
 def simbapre(kernel, index, no):
@@ -424,7 +425,8 @@ footer = dbc.Navbar(
 )
 
 ### App properties
-app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP, 'https://use.fontawesome.com/releases/v5.8.1/css/all.css'], assets_url_path='static')
+app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP, 'https://use.fontawesome.com/releases/v5.8.1/css/all.css'],
+                assets_url_path='image')
 
 server = app.server
 
@@ -673,6 +675,12 @@ def toggle_modal(n1, n2, is_open):
     [Input("navbar-toggler", "n_clicks")],
     [State("navbar-collapse", "is_open")],
 )
+@app.server.route('/image/<path:path>')
+def serve_image(path):
+    image_url = url_for('static', filename=path)
+    return image_url
+
+
 def toggle_navbar_collapse(n, is_open):
     if n:
         return not is_open
