@@ -675,16 +675,16 @@ def toggle_modal(n1, n2, is_open):
     [Input("navbar-toggler", "n_clicks")],
     [State("navbar-collapse", "is_open")],
 )
-@app.server.route('/image/<path:path>')
-def serve_image(path):
-    image_url = url_for('static', filename=path)
-    return image_url
-
-
 def toggle_navbar_collapse(n, is_open):
     if n:
         return not is_open
     return is_open
+
+
+@app.server.route('/image/<path:path>')
+def serve_image(path):
+    image_url = url_for('static', filename=path)
+    return image_url
 
 
 ### run server
