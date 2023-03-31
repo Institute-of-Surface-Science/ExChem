@@ -34,8 +34,11 @@ jobs:
           python -m venv venv
           source venv/bin/activate
       
-      - name: Install dependencies
-        run: pip install -r requirements.txt
+      - name: Install dependencies and set file permissions
+        run: |
+          pip install -r requirements.txt
+          chmod -R 644 static/
+          chown -R www-data:www-data static/
         
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
       
@@ -60,6 +63,11 @@ jobs:
         with:
           name: python-app
           path: .
+          
+      - name: Set file permissions
+        run: |
+          chmod -R 644 static/
+          chown -R www-data:www-data static/
           
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
