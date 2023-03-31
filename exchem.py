@@ -424,7 +424,7 @@ footer = dbc.Navbar(
 )
 
 ### App properties
-app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP, 'https://use.fontawesome.com/releases/v5.8.1/css/all.css'], assets_url_path='static', url_base_pathname="https://exchem.azurewebsites.net/")
+app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP, 'https://use.fontawesome.com/releases/v5.8.1/css/all.css'], assets_url_path='static')
 
 server = app.server
 
