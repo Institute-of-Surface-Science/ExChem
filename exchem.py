@@ -1,7 +1,6 @@
- plotly.graph_objects as go
+import plotly.graph_objects as go
 import numpy as np
 import pandas as pd
-import plotly.express as px
 
 import dash
 import dash_core_components as dcc
@@ -10,11 +9,9 @@ import dash_html_components as html
 from dash_bio_utils import xyz_reader
 from dash.dependencies import Input, Output, State
 import dash_table
-from dash_table.Format import Format, Scheme
+from dash_table.Format import Format
 import dash_bootstrap_components as dbc
 
-
-import json
 
 def simbapre(kernel, df, index, no):
     #idx = index + 7211
@@ -658,5 +655,5 @@ def toggle_navbar_collapse(n, is_open):
     return is_open
 
 ### run server
-if __name__ == '__main__':
-    app.run_server(debug=True, use_reloader=False)  # Turn off reloader if inside Jupyter
+#if __name__ == '__main__':
+#    app.run_server(debug=True, use_reloader=False)  # Turn off reloader if inside Jupyter
