@@ -61,11 +61,6 @@ jobs:
           name: python-app
           path: .
           
-      - name: Set file permissions
-        run: |
-          sudo chmod -R 644 static/
-          sudo chown -R www-data:www-data static/
-          
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
         id: deploy-to-webapp
@@ -75,4 +70,6 @@ jobs:
           app-name: 'ExChem'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_9C9D63EE814747F0B4B498C40DD2529B }}
+          post-deployment-script: './deploy.sh'
+
 
