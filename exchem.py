@@ -375,7 +375,7 @@ navbar = dbc.Navbar(
             # Use row and col to control vertical alignment of logo / brand
             dbc.Row(
                 [
-                    dbc.Col(html.Img(src="assets/id_logo.png",
+                    dbc.Col(html.Img(src="/static/id_logo.png",
                                      height="30px"), width="auto"),
                     dbc.Col(dbc.NavbarBrand("ExChem: Explore the Chemical Space", className="ml-2"), width="auto"),
                 ],
@@ -424,7 +424,7 @@ footer = dbc.Navbar(
 )
 
 ### App properties
-app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP, 'https://use.fontawesome.com/releases/v5.8.1/css/all.css'])
+app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP, 'https://use.fontawesome.com/releases/v5.8.1/css/all.css'], assets_url_path='static', url_base_pathname="https://exchem.azurewebsites.net/")
 
 server = app.server
 
@@ -680,5 +680,5 @@ def toggle_navbar_collapse(n, is_open):
 
 
 ### run server
-#if __name__ == '__main__':
-#    app.run_server(debug=True, use_reloader=True)  # Turn off reloader if inside Jupyter
+if __name__ == '__main__':
+    app.run_server(debug=True, use_reloader=True)  # Turn off reloader if inside Jupyter
